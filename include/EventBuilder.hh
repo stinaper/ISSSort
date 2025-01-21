@@ -150,6 +150,7 @@ private:
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 	std::shared_ptr<ISSGammaRayEvt> gamma_evt;
 	std::shared_ptr<ISSLumeEvt> lume_evt;
+        std::shared_ptr<ISSCDEvt> cd_evt;
 
 	/// Outputs
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
@@ -305,6 +306,7 @@ private:
 	unsigned int		zd_ctr;			///< Counts the number of zero-degree detector events within a given file
 	unsigned int		gamma_ctr;		///< Counts the number of Gamma-Ray events within a given file
 	unsigned int		lume_ctr;		///< Counts the number of LUME events within a given file
+  	unsigned int		cd_ctr;		///< Counts the number of CD events within a given file
 	unsigned long		n_asic_data;	///< Counter for the number of asic data packets in a file
 	unsigned long		n_caen_data;	///< Counter for number of caen data packets in a file
 	unsigned long		n_mesy_data;	///< Counter for number of mesytec data packets in a file

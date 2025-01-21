@@ -177,6 +177,7 @@ void ISSEventBuilder::StartFile(){
 	zd_ctr		= 0;
 	gamma_ctr	= 0;
 	lume_ctr	= 0;
+	cd_ctr          = 0;
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 	
@@ -310,6 +311,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	zd_evt		= std::make_shared<ISSZeroDegreeEvt>();
 	gamma_evt	= std::make_shared<ISSGammaRayEvt>();
 	lume_evt	= std::make_shared<ISSLumeEvt>();
+	cd_evt  	= std::make_shared<ISSCDEvt>();
 
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
@@ -1075,6 +1077,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
 				GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
 				LumeFinder();           // add a LumeEvt for each LUME
+				CDFinder();             // add a CDEvt for each ... ?
 
 				// ------------------------------------
 				// Add timing and fill the ISSEvts tree
@@ -1095,7 +1098,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					write_evts->GetElumMultiplicity() ||
 					write_evts->GetZeroDegreeMultiplicity() ||
 					write_evts->GetGammaRayMultiplicity()  ||
-					write_evts->GetLumeMultiplicity() )
+					write_evts->GetLumeMultiplicity() ||
+				        write_evts->GetCDMultiplicity() )
 					output_tree->Fill();
 
 				// Clean up if the next event is going to make the tree full
@@ -1177,6 +1181,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	ss_log << "   ZeroDegree events = " << zd_ctr << std::endl;
 	ss_log << "   Gamma-ray events = " << gamma_ctr << std::endl;
 	ss_log << "   LUME events = " << lume_ctr << std::endl;
+	ss_log << "   CD events = " << cd_ctr << std::endl;
 	ss_log << "   CAEN pulser = " << n_caen_pulser << std::endl;
 	ss_log << "   FPGA pulser" << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
