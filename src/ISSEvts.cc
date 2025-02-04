@@ -8,6 +8,7 @@ ClassImp(ISSElumEvt)
 ClassImp(ISSZeroDegreeEvt)
 ClassImp(ISSGammaRayEvt)
 ClassImp(ISSLumeEvt)
+ClassImp(ISSCDEvt)
 ClassImp(ISSEvts)
 
 
