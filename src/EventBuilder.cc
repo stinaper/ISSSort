@@ -2622,7 +2622,6 @@ void ISSEventBuilder::CdFinder() {
 
 	//std::cout << __PRETTY_FUNCTION__ << std::endl;
 
-  //TODO: figure out if we should check something more here
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	std::vector<unsigned int> layers;
@@ -2634,12 +2633,13 @@ void ISSEventBuilder::CdFinder() {
 		// Find the dE event, usually the trigger
 	    // Check if first dE layer
 		if( cdid_list[i] == (int)set->GetCDEnergyLossStart() ){
-			
+
+		    // Set dE time, 
 			cd_evt->ClearEvent();
 			cd_evt->SetdETime( cdtd_list[i] );
 			cd_evt->SetSector( cdsec_list[i] );
 			cd_evt->SetRing( cdring_list[i] );
-			cd_evt->AddFragment( ren_list[i], rid_list[i] );
+			cd_evt->AddFragment( cden_list[i], cdid_list[i] );
 			
 			index.push_back(i);
 			layers.push_back(cdid_list[i]);
@@ -2666,8 +2666,8 @@ void ISSEventBuilder::CdFinder() {
 
 				    // check if first E layer
 					if( cdid_list[j] == (int)set->GetCDEnergyRestStart() )
-					  cd_E_dE_tdiff[cdsec_list[i]]->Fill( cdtd_list[j] - cdtd_list[i] ); //fill histogram with time difference between E and dE layer, now for each sector? should we have for each ring as well?
-				    cd_tdiff[cdsec_list[i]]->Fill( cdid_list[j], cdtd_list[j] - cdtd_list[i] );
+					  //cd_E_dE_tdiff[cdsec_list[i]]->Fill( cdtd_list[j] - cdtd_list[i] ); //fill histogram with time difference between E and dE layer, now for each sector? should we have for each ring as well?
+					  //cd_tdiff[cdsec_list[i]]->Fill( cdid_list[j], cdtd_list[j] - cdtd_list[i] );
 
 				    // The hits lie within the CD hit window
 					if( TMath::Abs( cdtd_list[i] - cdtd_list[j] ) < set->GetCDDDHitWindow() ) {
@@ -2679,14 +2679,14 @@ void ISSEventBuilder::CdFinder() {
 						if( cdid_list[j] == (int)set->GetCDEnergyRestStart() )
 							cd_evt->SetETime( cdtd_list[j] );
 
-				   //TODO: add similar for matching sector/ring hits (cd_rs_hit_window)
+    
 					}
 					else if (cdsec_list[i] == cdsec_list[j] &&		// They are in the same sector
 				   cdring_list[i] == cdring_list[j] &&      // They are in the same ring
 				   cdid_list[i] != cdid_list[j]	 ){		    // They are not in the same laye
 				}
 				  
-					
+			 //TODO: add handling of adjacent sector/ring hits (and checking cd_rs_hit_window)		
 			  }
 				
 			}
