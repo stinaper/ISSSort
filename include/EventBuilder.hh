@@ -303,7 +303,7 @@ private:
 	std::vector<double>		cdtd_list;	///< list of CD time differences for CdFinder
 	std::vector<char>		cdid_list;	///< list of CD IDs/layers for CdFinder
 	std::vector<char>		cdsec_list;	///< list of CD sectors for CdFinder
-	std::vector<char>		cdring_list;	///< list of CD sectors for CdFinder
+	std::vector<char>		cdring_list;	///< list of CD rings for CdFinder
 
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file

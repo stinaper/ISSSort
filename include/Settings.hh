@@ -180,7 +180,7 @@ public:
 	inline unsigned char GetNumberOfCDLayers(){ return n_cd_layer; };
 	inline unsigned char GetNumberOfCDSectors(){ return n_cd_sector; };
 	inline unsigned char GetNumberOfCDRings(){ return n_cd_ring; };
-	inline unsigned char GetNumberOfCDElements(){ return n_cd_ring * n_cd_layer * n_cd_ring; };
+	inline unsigned char GetNumberOfCDElements(){ return n_cd_ring * n_cd_layer * n_cd_sector; };
 	inline unsigned char GetCDEnergyLossStart(){ return cd_eloss_start; };
 	inline unsigned char GetCDEnergyLossStop(){ return cd_eloss_stop; };
 	inline unsigned char GetCDEnergyRestStart(){ return cd_erest_start; };

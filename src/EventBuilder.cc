@@ -140,7 +140,7 @@ ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Reset private-member counters, arrays and flags for processing the next input file. Called in the ISSEventBuilder::SetInputFile and ISSEventBuilder::SetInputTree functions
+/// Reset private-member counters, arrays and flags for processing the next input file. Called in the ISSEventBuilder::SetInputFile function
 void ISSEventBuilder::StartFile(){
 	
 	// Call for every new file
@@ -244,7 +244,7 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Sets the private member input_tree to the parameter user_tree, sets the branch address and calls the ISSEventBuilder::StartFile function
+/// Sets the private member input_tree to the parameter user_tree and sets the branch address
 /// \param [in] user_tree The name of the tree in the ROOT file containing the time-sorted events
 void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	
@@ -1395,8 +1395,6 @@ void ISSEventBuilder::ArrayFinder() {
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 			
 			// Empty the array of indexes
-			pindex.clear();
-			nindex.clear();
 			std::vector<unsigned int>().swap(pindex);
 			std::vector<unsigned int>().swap(nindex);
 			pmax_idx = nmax_idx = -1;
@@ -2619,87 +2617,99 @@ void ISSEventBuilder::LumeFinder() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// This function takes a series of E and dE signals on the silicon CD (fission fragments) detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the E detector, but if a corresponding dE signal is not found, then a hit at dE = 0 is still recorded.
+/// This function takes a series of E and dE signals on the silicon CD (fission fragments) detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded.
 void ISSEventBuilder::CdFinder() {
-	// for now - just RecoilFinder copied
 
 	//std::cout << __PRETTY_FUNCTION__ << std::endl;
-	
+
+  //TODO: figure out if we should check something more here
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	std::vector<unsigned int> layers;
-	bool flag_skip;
+	bool flag_skip; 
 	
-	// Loop over recoil events
-	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
+	// Loop over CD events
+	for( unsigned int i = 0; i < cden_list.size(); ++i ) {
 		
 		// Find the dE event, usually the trigger
-		if( rid_list[i] == (int)set->GetRecoilEnergyLossStart() ){
+	    // Check if first dE layer
+		if( cdid_list[i] == (int)set->GetCDEnergyLossStart() ){
 			
-			recoil_evt->ClearEvent();
-			recoil_evt->SetdETime( rtd_list[i] );
-			recoil_evt->SetSector( rsec_list[i] );
-			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
+			cd_evt->ClearEvent();
+			cd_evt->SetdETime( cdtd_list[i] );
+			cd_evt->SetSector( cdsec_list[i] );
+			cd_evt->SetRing( cdring_list[i] );
+			cd_evt->AddFragment( ren_list[i], rid_list[i] );
 			
 			index.push_back(i);
-			layers.push_back(rid_list[i]);
+			layers.push_back(cdid_list[i]);
 
 			// Look for matching E events
-			for( unsigned int j = 0; j < ren_list.size(); ++j ) {
+			for( unsigned int j = 0; j < cden_list.size(); ++j ) {
 
 				// Check if we already used this hit
 				flag_skip = false;
 				for( unsigned int k = 0; k < index.size(); ++k ) {
 					if( index[k] == j ) flag_skip = true;
-					if( (int)layers[k] == rid_list[j] ) flag_skip = true;
+					if( (int)layers[k] == cdid_list[j] ) flag_skip = true;
 				}
 				
 				// Found a match
 				// ^^^ Not sure if this will work with the ionisation chamber!
 				if( i != j && 		// Not looking at the same hit
-				   !flag_skip &&	// Not looking at a previously-used hit
-				   rsec_list[i] == rsec_list[j] &&		// They are in the same sector
-				   rid_list[i] != rid_list[j]			// They are not in the same layer
-				   ){
-					
-					if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
-						recoil_E_dE_tdiff[rsec_list[i]]->Fill( rtd_list[j] - rtd_list[i] );
-					recoil_tdiff[rsec_list[i]]->Fill( rid_list[j], rtd_list[j] - rtd_list[i] );
-					
-					// The hits lie within the recoil hit window
-					if( TMath::Abs( rtd_list[i] - rtd_list[j] ) < set->GetRecoilHitWindow() ) {
-						
+					!flag_skip ) {// Not looking at a previously-used hit
+
+				  if (cdsec_list[i] == cdsec_list[j] &&		// They are in the same sector
+				   cdring_list[i] == cdring_list[j] &&      // They are in the same ring
+				   cdid_list[i] != cdid_list[j]	 ){		    // They are not in the same layer
+				  
+
+				    // check if first E layer
+					if( cdid_list[j] == (int)set->GetCDEnergyRestStart() )
+					  cd_E_dE_tdiff[cdsec_list[i]]->Fill( cdtd_list[j] - cdtd_list[i] ); //fill histogram with time difference between E and dE layer, now for each sector? should we have for each ring as well?
+				    cd_tdiff[cdsec_list[i]]->Fill( cdid_list[j], cdtd_list[j] - cdtd_list[i] );
+
+				    // The hits lie within the CD hit window
+					if( TMath::Abs( cdtd_list[i] - cdtd_list[j] ) < set->GetCDDDHitWindow() ) {
+				 		
 						index.push_back(j);
-						layers.push_back(rid_list[j]);
-						recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
+						layers.push_back(cdid_list[j]);
+					    cd_evt->AddFragment( cden_list[j], cdid_list[j] );
 						
-						if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
-							recoil_evt->SetETime( rtd_list[j] );
-						
+						if( cdid_list[j] == (int)set->GetCDEnergyRestStart() )
+							cd_evt->SetETime( cdtd_list[j] );
+
+				   //TODO: add similar for matching sector/ring hits (cd_rs_hit_window)
 					}
-					
+					else if (cdsec_list[i] == cdsec_list[j] &&		// They are in the same sector
+				   cdring_list[i] == cdring_list[j] &&      // They are in the same ring
+				   cdid_list[i] != cdid_list[j]	 ){		    // They are not in the same laye
 				}
+				  
+					
+			  }
 				
 			}
+			}
 			
-			// Histogram the recoils
-			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal( set->GetRecoilEnergyTotalStart(), set->GetRecoilEnergyTotalStop() ),
-								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-			recoil_E_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
-			recoil_dE_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+			// Histogram the cds
+		    //cd_EdE[cdsec_list[i]]->Fill( cd_evt->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+			//				    cd_evt->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+		    //cd_dEsum[cdsec_list[i]]->Fill( cd_evt->GetEnergyTotal( set->GetCDEnergyTotalStart(), set->GetCDEnergyTotalStop() ),
+			//				    cd_evt->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+			//cd_E_singles[cdsec_list[i]]->Fill( cd_evt->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ) );
+			//cd_dE_singles[cdsec_list[i]]->Fill( cd_evt->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
 			
-			// Fill the tree and get ready for next recoil event
-			write_evts->AddEvt( recoil_evt );
-			recoil_ctr++;
+			// Fill the tree and get ready for next cd event
+			write_evts->AddEvt( cd_evt );
+			cd_ctr++;
 
 		}
 		
 	}
 	
 	// Clean up
-	//delete recoil_evt;
+	//delete cd_evt;
 	
 	return;
 
@@ -2937,10 +2947,7 @@ void ISSEventBuilder::MakeHists(){
 		output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
 
-	
-	// ----------------- //
-	// Recoil histograms //
-	// ----------------- //
+
 	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
 	recoil_EdE_raw.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dEsum.resize( set->GetNumberOfRecoilSectors() );
@@ -2989,7 +2996,16 @@ void ISSEventBuilder::MakeHists(){
 		recoil_tdiff[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 2000, -6e3, 6e3 );
 		
 	}
-	
+
+	// ------------- //
+	// CD histograms //
+	// ------------- //
+	dirname = "cd";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+	// Nothing so far
+
 	
 	// ---------------- //
 	// MWPC histograms //

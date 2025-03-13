@@ -183,6 +183,8 @@ private:
 	std::shared_ptr<ISSRecoilEvt> recoil_evt;
 	std::shared_ptr<ISSElumEvt> elum_evt;
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
+  	std::shared_ptr<ISSCDEvt> cd_evt;
+
 	
 	/// Output file and tree
 	TFile *output_file;

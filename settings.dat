@@ -199,3 +199,15 @@
 #LUME_0_fe.Module: 2		#
 #LUME_0_fe.Channel: 2		#
 
+##----------------#
+## CD Detectors #
+##----------------#
+NumberOfCDLayers: 1			# Usually 2, but 1 in simulation
+NumberOfCDSectors: 32
+NumberOfCDRings: 24
+#CDEnergyLossStart: 0		# Start layer for integrating energy loss
+#CDEnergyLossStop: 0		# Stop layer for integrating energy loss
+#CDEnergyRestStart: 1		# Start layer for integrating energy rest
+#CDEnergyRestStop: 1		# Stop layer for integrating energy rest
+#CDEnergyTotalStart: 0		# Start layer for integrating energy total
+#CDEnergyTotalStop: 1		# Stop layer for integrating energy total
