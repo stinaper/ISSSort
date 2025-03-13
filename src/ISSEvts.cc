@@ -19,16 +19,7 @@ ISSEvts::ISSEvts(){}
 ISSEvts::~ISSEvts(){}
 
 void ISSEvts::ClearEvt() {
-	
-	array_event.clear();
-	arrayp_event.clear();
-	recoil_event.clear();
-	mwpc_event.clear();
-	elum_event.clear();
-	zd_event.clear();
-	gamma_event.clear();
-	lume_event.clear();
-        cd_event.clear();
+  
 
 	std::vector<ISSArrayEvt>().swap(array_event);
 	std::vector<ISSArrayPEvt>().swap(arrayp_event);
@@ -497,8 +488,6 @@ void ISSRecoilEvt::SetEvent( std::vector<float> myenergy,
 
 void ISSRecoilEvt::ClearEvent(){
 	
-	energy.clear();
-	id.clear();
 	std::vector<float>().swap(energy);
 	std::vector<unsigned char>().swap(id);
 	
@@ -563,8 +552,6 @@ void ISSZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
 
 void ISSZeroDegreeEvt::ClearEvent(){
 	
-	energy.clear();
-	id.clear();
 	std::vector<float>().swap(energy);
 	std::vector<unsigned char>().swap(id);
 	
@@ -634,8 +621,6 @@ void ISSCDEvt::SetEvent( std::vector<float> myenergy, std::vector<unsigned char>
 
 void ISSCDEvt::ClearEvent(){
 
-	energy.clear();
-	id.clear();
 	std::vector<float>().swap(energy);
 	std::vector<unsigned char>().swap(id);
 

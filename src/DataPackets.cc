@@ -114,11 +114,6 @@ void ISSDataPackets::SetData( std::shared_ptr<ISSInfoData> data ){
 
 void ISSDataPackets::ClearData(){
 	
-	asic_packets.clear();
-	caen_packets.clear();
-	mesy_packets.clear();
-	info_packets.clear();
-	
 	std::vector<ISSAsicData>().swap(asic_packets);
 	std::vector<ISSCaenData>().swap(caen_packets);
 	std::vector<ISSMesyData>().swap(mesy_packets);

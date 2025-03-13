@@ -36,12 +36,6 @@ TIssData::~TIssData() {}
 void TIssData::Clear() {
 	
 	// DSSD
-	fIss_StripFront_DetectorNbr.clear();
-	fIss_StripFront_StripNbr.clear();
-	fIss_StripFront_Energy.clear();
-	fIss_StripFront_TimeCFD.clear();
-	fIss_StripFront_TimeLED.clear();
-	fIss_StripFront_Time.clear();
 
 	std::vector<unsigned short>().swap(fIss_StripFront_DetectorNbr);
 	std::vector<unsigned short>().swap(fIss_StripFront_StripNbr);
@@ -49,13 +43,6 @@ void TIssData::Clear() {
 	std::vector<double>().swap(fIss_StripFront_TimeCFD);
 	std::vector<double>().swap(fIss_StripFront_TimeLED);
 	std::vector<double>().swap(fIss_StripFront_Time);
-	
-	fIss_StripBack_DetectorNbr.clear();
-	fIss_StripBack_StripNbr.clear();
-	fIss_StripBack_Energy.clear();
-	fIss_StripBack_TimeCFD.clear();
-	fIss_StripBack_TimeLED.clear();
-	fIss_StripBack_Time.clear();
 	
 	std::vector<unsigned short>().swap(fIss_StripBack_DetectorNbr);
 	std::vector<unsigned short>().swap(fIss_StripBack_StripNbr);
